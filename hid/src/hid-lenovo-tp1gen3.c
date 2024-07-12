@@ -54,7 +54,9 @@ struct lenovo_drvdata_cptkbd {
 };
 
 struct lenovo_drvdata_tpx1 {
-    int led_state;
+    uint16_t led_state;
+    uint8_t fnlock_state;
+    uint8_t led_present;
     struct led_classdev led_mute;
     struct led_classdev led_micmute;
     struct led_classdev led_fnlock;
@@ -970,6 +972,8 @@ static int lenovo_tpx1gen3_configure(struct hid_device *hdev)
     lenovo_led_brightness_set_tpx1(&drv_data->led_micmute, ledtrig_audio_get(LED_AUDIO_MICMUTE));
     hid_hw_wait(hdev);
 
+    lenovo_led_brightness_set_tpx1(&drv_data->led_fnlock, LED_FULL);
+
 	return 0;
 }
 
@@ -998,6 +1002,8 @@ static int lenovo_probe_tpx1gen3(struct hid_device *hdev)
         }
 
         drv_data->led_state = 0;
+        drv_data->fnlock_state = 1;
+        drv_data->led_present = 1;
 
         name_mute = devm_kzalloc(&hdev->dev, name_sz, GFP_KERNEL);
         name_micmute = devm_kzalloc(&hdev->dev, name_sz, GFP_KERNEL);
