@@ -483,7 +483,7 @@ static void lenovo_led_brightness_set_tpx1(struct led_classdev *led_cdev, enum l
 
     if (led_cdev == &drv_data->led_mute) {
         led = HID_LENOVO_LED_MUTE;
-    } else if (led_cdev == & drv_data->led_micmute) {
+    } else if (led_cdev == &drv_data->led_micmute) {
         led = HID_LENOVO_LED_MICMUTE;
     } else if (led_cdev == &drv_data->led_fnlock) {
         led = HID_LENOVO_LED_FNLOCK;
@@ -966,11 +966,12 @@ static int lenovo_tpx1gen3_configure(struct hid_device *hdev)
 	hid_hw_request(hdev, report, HID_REQ_SET_REPORT);
 	hid_hw_wait(hdev);
 
-    lenovo_led_brightness_set_tpx1(&drv_data->led_mute, ledtrig_audio_get(LED_AUDIO_MUTE));
-    hid_hw_wait(hdev);
+    /// TODO: ledtrig_audio_get is gone
+    /* lenovo_led_brightness_set_tpx1(&drv_data->led_mute, ledtrig_audio_get(LED_AUDIO_MUTE)); */
+    /* hid_hw_wait(hdev); */
 
-    lenovo_led_brightness_set_tpx1(&drv_data->led_micmute, ledtrig_audio_get(LED_AUDIO_MICMUTE));
-    hid_hw_wait(hdev);
+    /* lenovo_led_brightness_set_tpx1(&drv_data->led_micmute, ledtrig_audio_get(LED_AUDIO_MICMUTE)); */
+    /* hid_hw_wait(hdev); */
 
     lenovo_led_brightness_set_tpx1(&drv_data->led_fnlock, LED_FULL);
 
