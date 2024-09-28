@@ -1,58 +1,21 @@
 # Linux support patches for Lenovo X1 Tablet 3rd generation
 
- - [ACPI patches (volume/powerbutton and standby)](#acpi-patches)
  - [HID driver patches (keyboard functional keys and LEDs)](#linux-hid-patches)
   - [Installation on Arch Linux](#arch-linux-installation)
   - [Installation on Ubuntu (and possibly other distributions)](#ubuntu-installation-dkms)
  - [Additional Information](#additional-information)
 
-## ACPI Patches
 
-**Caution**: These steps will modify your computers firmware. This may break your device and/or attached hardware.
+## Removed items (newer kernels handle it correctly)
 
-For S3 sleep state and the power/volume buttons of the device to work the ACPI DSDT tables must be modified. The patches contained in this repository
-incorporate the information from the [Delta-Xi Blog][dxi]
-
-Prerequisites:
- - Intel ACPI Source Language compiler which is usually provided by the acpica or acpica-tools package
- - make
- - one of the following BIOS versions:
-   - N1ZET76W (1.32)
-   - N1ZET79W (1.35)
-   
-   other versions may work but may also require changes to the patch. The current BIOS version can be checked via
-   ```
-   sudo dmidecode  --string "bios-version"
-   ```
- - A Lenovo X1 Tablet 3rd Generation. To check if you have one of these devices you may run
-   ```
-   sudo dmidecode  --string "system-product-name"
-   ```
-   The output should beginn, according to the lenovo website with "20KJ" or "20KK". The device the patch was tested on returned "20KJ001NGE".
-
-To apply the ACPI patches change to the acpi subdirectory and run make with the appropriate patch for your BIOS version.
-Choose between `patch132` for version "1.32" and `patch135` for version "1.35".
-
-```{.sh}
-cd acpi
-sudo make dsdt.dat
-make patch135 compile
-sudo make install
-```
-
-The patch should apply cleanly. If not you may patch the dsdt.dsl file by hand.
-Finally add the acpi_override file as another initrd to your bootloader configuration.
-
-```
-initrd=/boot/acpi_override mem_sleep_default=deep
-```
+- ACPI patches
+- hid-multitouch patches 
 
 ## Linux HID Patches
 
 **Caution**: These steps will modify your kernel. Doing so might prevent your system from booting.
 
-The attachable keyboard uses non standard keycodes for the functional keys and an additional USB endpoint for control of the LEDs. The provided sourcecode is a patched version of the upstream [hid-lenovo module][hid-lenovo]. For reference the patches (for the first generation device?) by [Dennis Wassenberg][hid-lenovo-patches] were used. Furhtermore this
-repository contains a patched version of the upstream [hid-multitouch module][hid-multitouch] which fixes the pointstick for kernel versions > 5.4.11 (for details see [here][poinstick-issue]).
+The attachable keyboard uses non standard keycodes for the functional keys and an additional USB endpoint for control of the LEDs. The provided sourcecode is a patched version of the upstream [hid-lenovo module][hid-lenovo]. For reference the patches (for the first generation device?) by [Dennis Wassenberg][hid-lenovo-patches] were used. 
 
 Prerequisites:
  - make
@@ -96,21 +59,18 @@ dnf install hid-lenovo-tp1gen3
 cd linux-tp1gen3-master
 ```
 
-2. edit `./hid/src/dkms.conf`
-   Replace the placeholders **@_PKGBASE@** and **@VERSION@** with the actual values being hid-lenovo-tp1gen3 and the current version (e.g. 0.2.0). The version can be determined from the PKBUILD file.
-
-3. install the DKMS package
+2. install the DKMS package
 ```{.sh}
 sudo apt-get install build-essential dkms 
 ```
 
-4. copy files
+3. copy files
 ```{.sh}
 sudo mkdir -p /usr/src/hid-lenovo-tp1gen3-<version>
 sudo cp -a ./hid/src/* /usr/src/hid-lenovo-tp1gen3-<version> 
 ```
 
-5. build and install
+4. build and install
 ```{.sh}
 sudo dkms add -m hid-lenovo-tp1gen3 -v <version>
 sudo dkms build -m hid-lenovo-tp1gen3 -v <version>
@@ -122,7 +82,7 @@ Check if the module was successfully added to dkms
 hid-lenovo-tp1gen3, 0.2.0, 5.6.14, x86_64: installed
 ```
 
-6. blacklist the old module
+5. blacklist the old module
    Add `blacklist hid-multitouch` to the file `/etc/modprobe.d/blacklist.conf`
    Then reboot.
 
