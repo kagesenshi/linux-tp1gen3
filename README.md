@@ -79,6 +79,20 @@ sudo make install
 As the multitouch module is not an extension but a replacement of the upstream module, the latter must be blacklisted. While the Arch Linux package should add the necessary lines
 automatically it might be necessary to regenerate the initramfs as the original module also must be replaced there. For details see [here][aw-blacklisting].
 
+### Fedora installation (DKMS)
+1. Install rpmdevtools
+```
+sudo dnf install rpmdevtools
+```
+2. download `linux-tp1gen3-master.zip`, extract, and create back as `hid-lenovo-tp1gen3-0.2.0.tar.bz2`
+3. build RPM
+```
+rpmbuild -ta hid-lenovo-tp1gen3-0.2.0.tar.bz2
+```
+4. install rpm
+```
+sudo dnf install ~/rpmbuild/RPMS/hid-lenovo-tp1gen3-0.2.0-0.*.rpm 
+```
 
 ### Ubuntu installation (DKMS)
 
