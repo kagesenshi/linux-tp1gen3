@@ -12,8 +12,8 @@ Release: 0%{?dist}
 Summary: HID kernel module for Thinkpad X1 Tablet Gen 3
 BuildArch: noarch
 License: MIT
-URL: https://github.com/amosbird/linux-tp1gen3
-Source0: %{name}-%{version}.tar.bz2
+URL: https://github.com/kagesenshi/linux-tp1gen3
+Source0: {{{ git_dir_pack }}}
 
 BuildRequires: dkms
 Requires: dkms

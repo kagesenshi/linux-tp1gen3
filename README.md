@@ -80,18 +80,13 @@ As the multitouch module is not an extension but a replacement of the upstream m
 automatically it might be necessary to regenerate the initramfs as the original module also must be replaced there. For details see [here][aw-blacklisting].
 
 ### Fedora installation (DKMS)
-1. Install rpmdevtools
+1. Enable copr repository
 ```
-sudo dnf install rpmdevtools
+dnf copr enable izhar/hid-lenovo-tp1gen3 
 ```
-2. download `linux-tp1gen3-master.zip`, extract, and create back as `hid-lenovo-tp1gen3-0.2.0.tar.bz2`
-3. build RPM
+2. install RPM
 ```
-rpmbuild -ta hid-lenovo-tp1gen3-0.2.0.tar.bz2
-```
-4. install rpm
-```
-sudo dnf install ~/rpmbuild/RPMS/hid-lenovo-tp1gen3-0.2.0-0.*.rpm 
+dnf install hid-lenovo-tp1gen3
 ```
 
 ### Ubuntu installation (DKMS)
