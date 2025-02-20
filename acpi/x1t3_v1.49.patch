@@ -1,0 +1,35 @@
+--- ./dsdt.dsl	2025-02-20 23:41:23.870970429 +0800
++++ ./dsdt.dsl	2025-02-20 23:41:09.957931468 +0800
+@@ -18,7 +18,7 @@
+  *     Compiler ID      "INTL"
+  *     Compiler Version 0x20160527 (538314023)
+  */
+-DefinitionBlock ("", "DSDT", 2, "LENOVO", "SKL     ", 0x00000000)
++DefinitionBlock ("", "DSDT", 2, "LENOVO", "SKL     ", 0x00000001)
+ {
+     External (_PR_.BGIA, UnknownObj)
+     External (_PR_.BGMA, UnknownObj)
+@@ -232,9 +232,7 @@
+     Name (SS1, 0x00)
+     Name (SS2, 0x00)
+     Name (SS3, One)
+-    One
+     Name (SS4, One)
+-    One
+     OperationRegion (GNVS, SystemMemory, 0x5B534000, 0x0789)
+     Field (GNVS, AnyAcc, Lock, Preserve)
+     {
+@@ -30797,6 +30795,13 @@
+         0x00, 
+         0x00
+     })
++    Name (\_S3, Package (0x04)  // _S3_: S3 System State
++    {
++        0x05,
++        0x05,
++        0x00,
++        0x00
++    })
+     Name (\_S4, Package (0x04)  // _S4_: S4 System State
+     {
+         0x06, 

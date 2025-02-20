@@ -1,90 +1,48 @@
 # Linux support patches for Lenovo X1 Tablet 3rd generation
 
- - [HID driver patches (keyboard functional keys and LEDs)](#linux-hid-patches)
-  - [Installation on Arch Linux](#arch-linux-installation)
-  - [Installation on Ubuntu (and possibly other distributions)](#ubuntu-installation-dkms)
- - [Additional Information](#additional-information)
 
+## ACPI Patches
 
-## Removed items (newer kernels handle it correctly)
+**Caution**: These steps will modify your computers firmware. This may break your device and/or attached hardware.
 
-- ACPI patches
-- hid-multitouch patches 
-
-## Linux HID Patches
-
-**Caution**: These steps will modify your kernel. Doing so might prevent your system from booting.
-
-The attachable keyboard uses non standard keycodes for the functional keys and an additional USB endpoint for control of the LEDs. The provided sourcecode is a patched version of the upstream [hid-lenovo module][hid-lenovo]. For reference the patches (for the first generation device?) by [Dennis Wassenberg][hid-lenovo-patches] were used. 
+For S3 sleep state and the power/volume buttons of the device to work the ACPI DSDT tables must be modified. The patches contained in this repository
+incorporate the information from the [Delta-Xi Blog][dxi]
 
 Prerequisites:
+ - Intel ACPI Source Language compiler which is usually provided by the acpica or acpica-tools package
  - make
- - GCC C compiler
- - Linux headers/source for the currently installed kernel
+ - one of the following BIOS versions:
+   - N1ZET76W (1.32)
+   - N1ZET79W (1.35)
+   - N1ZET93W (1.49)
+   
+   other versions may work but may also require changes to the patch. The current BIOS version can be checked via
+   ```
+   sudo dmidecode  --string "bios-version"
+   ```
+ - A Lenovo X1 Tablet 3rd Generation. To check if you have one of these devices you may run
+   ```
+   sudo dmidecode  --string "system-product-name"
+   ```
+   The output should beginn, according to the lenovo website with "20KJ" or "20KK". The device the patch was tested on returned "20KJ001NGE".
 
-### Arch Linux installation
-When running Arch Linux you may build the DKMS package and install it via pacman:
+To apply the ACPI patches change to the acpi subdirectory and run make with the appropriate patch for your BIOS version.
+Choose between `patch149` for version "1.49", `patch132` for version "1.32" and `patch135` for version "1.35".
 
 ```{.sh}
-cd hid
-makepkg .
-pacman -U hid-lenovo-tp1gen3-dkms-0.2.0-1-x86_64.pkg.tar.xz
-```
-
-If you install the compiled module keep in mind, that you have to recompile the module every time your kernel is updated.
-
-```{.sh}
-cd hid
-make
+cd acpi
+sudo make dsdt.dat
+make patch149 compile
 sudo make install
 ```
 
-As the multitouch module is not an extension but a replacement of the upstream module, the latter must be blacklisted. While the Arch Linux package should add the necessary lines
-automatically it might be necessary to regenerate the initramfs as the original module also must be replaced there. For details see [here][aw-blacklisting].
+The patch should apply cleanly. If not you may patch the dsdt.dsl file by hand.
+Finally add the acpi_override file as another initrd to your bootloader configuration.
 
-### Fedora installation (DKMS)
-1. Enable copr repository
-```
-dnf copr enable izhar/hid-lenovo-tp1gen3 
-```
-2. install RPM
-```
-dnf install hid-lenovo-tp1gen3
-```
+## Removed items (newer kernels handle it correctly)
 
-### Ubuntu installation (DKMS)
-
-1. download and extract `linux-tp1gen3-master` 
-```
-cd linux-tp1gen3-master
-```
-
-2. install the DKMS package
-```{.sh}
-sudo apt-get install build-essential dkms 
-```
-
-3. copy files
-```{.sh}
-sudo mkdir -p /usr/src/hid-lenovo-tp1gen3-<version>
-sudo cp -a ./hid/src/* /usr/src/hid-lenovo-tp1gen3-<version> 
-```
-
-4. build and install
-```{.sh}
-sudo dkms add -m hid-lenovo-tp1gen3 -v <version>
-sudo dkms build -m hid-lenovo-tp1gen3 -v <version>
-sudo dkms install -m hid-lenovo-tp1gen3 -v <version>
-```
-Check if the module was successfully added to dkms
-```{.sh}
-~$ dkms status
-hid-lenovo-tp1gen3, 0.2.0, 5.6.14, x86_64: installed
-```
-
-5. blacklist the old module
-   Add `blacklist hid-multitouch` to the file `/etc/modprobe.d/blacklist.conf`
-   Then reboot.
+- hid-multitouch patches 
+- hid-lenovo patches
 
 ## Contributions
 Thanks goes to
